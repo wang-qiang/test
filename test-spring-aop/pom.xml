@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	
+	<!-- 项目信息 -->
+	<name>Spring项目运行标准依赖</name>
+	<description>IoC+AOP=必要包+(spring-aop+aopalliance)</description>
+	
+	
+	<!-- 父项目 -->
+	<parent>
+		<groupId>fuc</groupId>
+		<artifactId>fuc-parent</artifactId>
+		<version>1.0</version>
+	</parent>
+
+
+	<!-- 坐标 -->
+	<artifactId>test-spring-aop</artifactId>
+	<packaging>jar</packaging>
+
+
+	<!-- 依赖 -->
+	<dependencies>
+		<!-- fuc-common -->
+		<dependency>
+			<groupId>fuc</groupId>
+			<artifactId>fuc-common</artifactId>
+			<version>1.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<!-- Spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+	</dependencies>
+</project>
