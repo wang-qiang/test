@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>     
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">  
+<configuration>
+	<!-- 给实体类起别名 -->
+	<typeAliases>
+		<typeAlias type="test.entity.User" alias="User" />
+		<typeAlias type="test.entity.Article" alias="Article" />
+	</typeAliases>
+	
+	<!-- 数据源 -->
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="jdbc"/>
+			<dataSource type="POOLED">
+				<property name="driver" value="com.mysql.jdbc.Driver"/>
+				<property name="url" value="jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true&amp;failOverReadOnly=false"/>
+				<property name="username" value="root"/>
+				<property name="password" value=""/>
+			</dataSource>
+		</environment>
+	</environments>
+	
+	<!-- 映射文件 -->
+	<mappers>
+		<mapper resource="myBatis/userMapper.xml" />
+	</mappers>
+</configuration>

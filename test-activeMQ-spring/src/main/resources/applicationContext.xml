@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation=
+		   "http://www.springframework.org/schema/beans 
+			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context-3.0.xsd
+			http://www.springframework.org/schema/tx
+			http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+	<context:component-scan base-package="test" />
+
+
+
+	<!-- ************************************************************ -->
+	<!-- ************************几种连接工厂************************ -->
+	<!-- ************************************************************ -->
+	
+	<!-- 连接工厂 -->
+	<bean id="activeMQConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="tcp://localhost:61616" />
+	</bean>
+	
+	<!-- 连接池（发消息无法退出，因此没有使用，这里只是个例子）
+	<bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
+		<property name="connectionFactory" ref="activeMQConnectionFactory"/>
+		<property name="maxConnections" value="10"/>
+	</bean> -->
+	
+	<!-- 唯一连接工厂，会一直返回同一个链接，并且会忽略Connection的close方法调用（发消息无法退出，因此没有使用，这里只是个例子）
+	<bean id="singleConnectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">
+		<property name="targetConnectionFactory" ref="activeMQConnectionFactory"/>
+	</bean>  -->
+	
+	<!-- 继承了SingleConnectionFactory，新增了缓存功能，可缓存Session、MessageProducer和MessageConsumer（发消息无法退出，因此没有使用，这里只是个例子）
+	<bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+		<constructor-arg index="0" ref="activeMQConnectionFactory" />
+	</bean> -->
+	
+	
+	
+	<!-- ************************************************************ -->
+	<!-- ************************几种消息目标************************ -->
+	<!-- ************************************************************ -->
+	
+	<!-- 队列 -->
+	<bean id="queue0" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="queue0"/>
+	</bean>
+	<bean id="queue1" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="queue1" />
+	</bean>
+	<bean id="queue2" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="queue2" />
+	</bean>
+	<bean id="queue3" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="queue3"/>
+	</bean>
+	<bean id="queue4" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="queue4"/>
+	</bean>
+	<bean id="queue5" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="queue5"/>
+	</bean>
+	<bean id="queue6" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="queue6"/>
+	</bean>
+	<bean id="queue7" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="queue7"/>
+	</bean>
+	<bean id="queue8" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="queue8"/>
+	</bean>
+	<bean id="queue9" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="queue9"/>
+	</bean>
+	<!-- 主题 -->
+	<bean id="topic1" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="topic1"/>
+	</bean>
+	
+
+    
+	<!-- ************************************************************ -->
+	<!-- ****************************其它**************************** -->
+	<!-- ************************************************************ -->
+	
+    <!-- 监听器适配器，实现了MessageListener和SessionAwareMessageListener，可将收到的消息进行类型转换并通过反射传给一个普通Java类，自动发送返回消息 -->
+	<!-- 如果目标处理器是MessageListener或SessionAwareMessageListener，Spring将直接使用接收到的Message对象作为参数调用它们的onMessage方法，而不会再用反射去调用 -->
+	<bean id="listener3Adapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+        <constructor-arg ref="listener3"/>
+        <property name="defaultListenerMethod" value="handleMessage1"/>	<!-- 默认调用handleMessage -->
+        <property name="defaultResponseDestination" ref="queue1"/>	<!-- 指定回复目的地，也可在发送消息时调用message.setJMSReplyTo()指定，优先级更高 -->
+    </bean>
+	<bean id="listener5Adapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
+		<property name="delegate" ref="listener5"/>
+		<property name="messageConverter" ref="emailMessageConverter"/>  
+	</bean>
+	<bean id="listener6Adapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
+		<property name="delegate" ref="listener6"/>
+		<property name="messageConverter">
+			<null/>
+		</property>
+	</bean>
+    
+    <!-- 消息监听容器（执行监听） -->
+	<bean id="listener1Container" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="activeMQConnectionFactory" />
+		<property name="destination" ref="queue1" />
+		<property name="messageListener" ref="listener1" />
+	</bean>
+	<bean id="listener2Container" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="activeMQConnectionFactory" />
+		<property name="destination" ref="queue2" />
+		<property name="messageListener" ref="listener2" />
+	</bean>
+	<bean id="listener3Container" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="activeMQConnectionFactory"/>
+		<property name="destination" ref="queue3"/>
+		<property name="messageListener" ref="listener3Adapter"/>
+	</bean>
+	<bean id="listener4Container" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="activeMQConnectionFactory" />
+		<property name="destination" ref="queue5" />
+		<property name="messageListener" ref="listener4" />
+	</bean>
+	<bean id="listener5Container" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="activeMQConnectionFactory"/>
+		<property name="destination" ref="queue6"/>
+		<property name="messageListener" ref="listener5Adapter"/>
+	</bean>
+	<bean id="listener6Container" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="activeMQConnectionFactory"/>
+		<property name="destination" ref="queue7"/>
+		<property name="messageListener" ref="listener6Adapter"/>
+	</bean>
+	<bean id="listener7Container" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="activeMQConnectionFactory"/>
+		<property name="destination" ref="queue8"/>
+		<property name="messageListener" ref="listener7"/>
+		<property name="sessionTransacted" value="true"/>	<!-- 加入事务 -->
+	</bean>
+	<bean id="listener8Container" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="activeMQConnectionFactory"/>
+		<property name="destination" ref="queue9"/>
+		<property name="messageListener" ref="listener8"/>
+	</bean>
+
+	<!-- Spring提供的消息模板（可进行消息发送、接收等） -->
+	<bean id="jmsTemplate1" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="activeMQConnectionFactory" />
+		<property name="defaultDestination" ref="queue0" />
+	</bean>
+	<bean id="jmsTemplate2" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="activeMQConnectionFactory" />
+		<property name="defaultDestination" ref="queue3" />
+	</bean>
+	<bean id="jmsTemplate3" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="activeMQConnectionFactory" />
+		<property name="defaultDestination" ref="queue4" />
+		<property name="messageConverter" ref="emailMessageConverter"/>
+	</bean>
+	<bean id="jmsTemplate4" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="activeMQConnectionFactory" />
+		<property name="defaultDestination" ref="queue5" />
+		<property name="messageConverter" ref="emailMessageConverter"/>
+	</bean>
+	<bean id="jmsTemplate5" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="activeMQConnectionFactory" />
+		<property name="defaultDestination" ref="queue6" />
+		<property name="messageConverter" ref="emailMessageConverter"/>
+	</bean>
+	<bean id="jmsTemplate6" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="activeMQConnectionFactory" />
+		<property name="defaultDestination" ref="queue7" />
+		<property name="messageConverter">
+			<null/>
+		</property>
+	</bean>
+	<bean id="jmsTemplate7" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="activeMQConnectionFactory" />
+		<property name="defaultDestination" ref="queue8" />
+	</bean>
+	
+</beans>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation=
+		   "http://www.springframework.org/schema/beans 
+			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context-3.0.xsd
+			http://www.springframework.org/schema/aop
+			http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+			http://www.springframework.org/schema/tx
+			http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+	<!-- 指定Spring注解要扫描的包 -->
+	<context:component-scan base-package="test" />
+	
+	<!-- 事务 -->
+	<bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp">
+		<property name="transactionTimeout" value="300"/>
+	</bean>
+	<bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager" init-method="init" destroy-method="close">
+		<property name="forceShutdown" value="true"/>
+	</bean>
+	<bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+		<property name="transactionManager" ref="atomikosTransactionManager"/>
+		<property name="userTransaction" ref="atomikosUserTransaction"/>
+		<property name="allowCustomIsolationLevels" value="true"/>	<!-- 必须设置，否则程序出现异常JtaTransactionManager does not support custom isolation levels by default -->
+    </bean>
+	<tx:annotation-driven />
+	
+	<!-- 数据源 -->
+	<bean id="mysqlDs1" class="com.atomikos.jdbc.AtomikosDataSourceBean" init-method="init" destroy-method="close">
+		<property name="uniqueResourceName" value="mysql_ds_1"/>
+		<property name="xaDataSourceClassName" value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"/>
+		<property name="xaProperties">
+			<props>
+				<prop key="url">jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=utf-8</prop>
+				<prop key="user">root</prop>
+				<prop key="password"></prop>
+			</props>
+		</property>
+		<property name="poolSize" value="3"/>
+		<property name="maxPoolSize" value="10"/>
+		<property name="minPoolSize" value="2"/>
+		<property name="maintenanceInterval" value="60" />
+		<property name="borrowConnectionTimeout" value="30" />
+	</bean>
+	<bean id="mysqlDs2" class="com.atomikos.jdbc.AtomikosDataSourceBean" init-method="init" destroy-method="close">
+		<property name="uniqueResourceName" value="mysql_ds_2"/>
+		<property name="xaDataSourceClassName" value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"/>
+		<property name="xaProperties">
+			<props>
+				<prop key="URL">jdbc:mysql://localhost:3306/test2?useUnicode=true&amp;characterEncoding=utf-8</prop>
+				<prop key="user">root</prop>
+				<prop key="password"></prop>
+			</props>
+		</property>
+		<property name="poolSize" value="3"/>
+		<property name="maxPoolSize" value="10"/>
+		<property name="minPoolSize" value="2"/>
+		<property name="maintenanceInterval" value="60" />
+		<property name="borrowConnectionTimeout" value="30" />
+	</bean>
+	
+	<!-- 会话工厂 -->
+	<bean id="sqlSessionFactory1" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="mysqlDs1"/>
+		<property name="mapperLocations" value="classpath:mybatis/*.xml" />
+		<property name="typeAliasesPackage" value="test.entity"/>
+	</bean>
+	<bean id="sqlSessionFactory2" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="mysqlDs2"/>
+		<property name="mapperLocations" value="classpath:mybatis/*.xml" />
+		<property name="typeAliasesPackage" value="test.entity"/>
+	</bean>
+	
+	<!-- 注册Mapper(自动扫描) -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="test.dao" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory1"/>
+		<!-- <property name="markerInterface" value="test.filter.Dsi1" /> -->	<!-- 接口过滤 -->
+		<property name="annotationClass" value="test.filter.Dsa1"/>				<!-- 注解过滤 -->
+	</bean>
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="test.dao" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory2"/>
+		<!-- <property name="markerInterface" value="test.filter.Dsi2" /> -->
+		<property name="annotationClass" value="test.filter.Dsa2"/>
+	</bean>
+	
+	<!-- jms -->
+	<bean id="activeMQXAConnectionFactory" class="org.apache.activemq.ActiveMQXAConnectionFactory">
+		<property name="brokerURL" value="tcp://localhost:61616" />
+		<!-- 实际上只有maximumRedeliveries有效 
+		<property name="redeliveryPolicy" >
+			<bean class="org.apache.activemq.RedeliveryPolicy">
+				<property name="maximumRedeliveries" value="10"/>
+				<property name="useExponentialBackOff" value="true"/>
+				<property name="backOffMultiplier" value="2"/>
+				<property name="initialRedeliveryDelay" value="0"/>
+				<property name="redeliveryDelay" value="1000"/>
+				<property name="maximumRedeliveryDelay" value="0"/>
+			</bean>
+		</property>-->
+	</bean>
+	<bean id="atomikosConnectionFactory" class="com.atomikos.jms.AtomikosConnectionFactoryBean" init-method="init" destroy-method="close">
+	    <property name="uniqueResourceName" value="XAJMS" />
+	    <property name="xaConnectionFactory" ref="activeMQXAConnectionFactory" />
+	    <property name="maxPoolSize" value="40" />
+	</bean>
+	<bean id="queue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="queue"/>
+	</bean>
+	<bean id="listenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="atomikosConnectionFactory"/>
+		<property name="destination" ref="queue" />
+		<property name="messageListener" ref="listener"/>
+		<property name="sessionTransacted" value="true"/>
+		<property name="concurrency" value="5-10" />
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="atomikosConnectionFactory" />
+		<property name="defaultDestination" ref="queue" />
+	</bean>
+	
+</beans>

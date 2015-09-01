@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="test.dao.UserMapper">
+	<select id="findById" resultType="User">	<!-- resultType为返回类型，可以是类别名或完整类路径 -->
+		select * from user where id=#{id}
+	</select>
+	<select id="findByMap" resultType="User" >	<!-- 对应接口test.dao.UserMapper的findByMap() -->
+		select * from user where name=#{name} and age=#{age}
+	</select>
+	<select id="getArticles" parameterType="int" resultMap="resultUserArticleList">
+		select u.name,u.age,a.id aid,a.title,a.content 
+		from user u,article a
+		where u.id=a.user_id and u.id=#{id}
+	</select>
+	
+	<resultMap id="resultUserArticleList" type="Article">
+		<id property="id" column="aid" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<association property="user" javaType="User">
+			<id property="id" column="id" />
+			<result property="name" column="name" />
+			<result property="age" column="age" />
+		</association>
+	</resultMap>
+</mapper>

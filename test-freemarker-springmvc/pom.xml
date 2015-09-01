@@ -1,0 +1,70 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+
+	<!-- 父项目 -->
+	<parent>
+		<groupId>fuc</groupId>
+		<artifactId>fuc-parent</artifactId>
+		<version>1.0</version>
+	</parent>
+	
+	
+	<!-- 坐标 -->
+	<artifactId>test-freemarker-springmvc</artifactId>
+	<packaging>war</packaging>
+	
+	
+	<!-- 依赖 -->
+	<dependencies>
+		<!-- java ee -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+		</dependency>
+	
+		<!-- fuc-common -->
+		<dependency>
+			<groupId>fuc</groupId>
+			<artifactId>fuc-common</artifactId>
+			<version>1.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<!-- Spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+		
+		<!-- spring.整合freemarker需要 -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+		</dependency>
+		
+		<!-- freemarker -->
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+		</dependency>
+		
+		<!-- apache.commons.lang.主要为了用StringUtils，没多大用 -->
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+		</dependency>
+	</dependencies>
+
+
+	<!-- 构建 -->
+	<build>
+		<finalName>test-freemarker-springmvc</finalName>
+	</build>
+</project>

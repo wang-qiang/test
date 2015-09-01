@@ -1,0 +1,100 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	
+	<!-- 父项目 -->
+	<parent>
+		<groupId>fuc</groupId>
+		<artifactId>fuc-parent</artifactId>
+		<version>1.0</version>
+	</parent>
+	
+	
+	<!-- 坐标 -->
+	<artifactId>test-lucene</artifactId>
+	<packaging>war</packaging>
+	
+	
+	<!-- 属性 -->
+	<properties>
+		<lucene.version>4.8.0</lucene.version>
+	</properties>
+
+
+	<!-- 依赖 -->
+	<dependencies>
+    	<!-- fuc-common -->
+		<dependency>
+			<groupId>fuc</groupId>
+			<artifactId>fuc-common</artifactId>
+			<version>1.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<!-- lucene -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>lucene-sandbox</artifactId>
+					<groupId>org.apache.lucene</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>lucene-queries</artifactId>
+					<groupId>org.apache.lucene</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>lucene-core</artifactId>
+					<groupId>org.apache.lucene</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-highlighter</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>lucene-memory</artifactId>
+					<groupId>org.apache.lucene</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>lucene-queries</artifactId>
+					<groupId>org.apache.lucene</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>lucene-core</artifactId>
+					<groupId>org.apache.lucene</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<!-- IKAnalyzer -->
+		<dependency>
+			<groupId>org.wltea.analyzer</groupId>
+			<artifactId>IKAnalyzer</artifactId>
+		</dependency>
+		
+		<!-- tika -->
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-app</artifactId>
+		</dependency>
+	</dependencies>
+	
+	
+	<!-- 构建 -->
+	<build>
+		<finalName>test-lucene</finalName>
+	</build>
+</project>

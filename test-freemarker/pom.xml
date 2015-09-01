@@ -1,0 +1,26 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+
+	<!-- 父项目 -->
+	<parent>
+		<groupId>fuc</groupId>
+		<artifactId>fuc-parent</artifactId>
+		<version>1.0</version>
+	</parent>
+
+	<!-- 坐标 -->
+	<artifactId>test-freemarker</artifactId>
+	<packaging>jar</packaging>
+
+
+	<!-- 依赖 -->
+	<dependencies>
+		<!-- freemarker -->
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+		</dependency>
+	</dependencies>
+</project>

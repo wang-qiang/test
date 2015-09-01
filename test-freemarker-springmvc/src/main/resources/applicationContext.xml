@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation=
+		   "http://www.springframework.org/schema/beans 
+			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context-3.0.xsd
+			http://www.springframework.org/schema/aop
+			http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+			http://www.springframework.org/schema/mvc 
+			http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+
+	<!-- 指定Spring注解要扫描的包 -->
+	<context:component-scan base-package="test; fuc.common.freemarker" />
+	
+	<!-- MVC注解驱动 -->
+	<mvc:annotation-driven />
+	
+	<!-- freemarker配置 -->
+	<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+		<property name="templateLoaderPath" value="/WEB-INF/view/"/>
+		<property name="freemarkerSettings">
+			<props>
+				<prop key="classic_compatible">true</prop>				<!-- 如果变量为null，转化为空字符串 -->
+				<prop key="whitespace_stripping">true</prop>			<!-- 去掉多余空格 -->
+				<prop key="tag_syntax">auto_detect</prop>				<!-- 标签语法，auto_detect-自动检测，可使用方括号[] -->
+				<prop key="template_update_delay">3600</prop>			<!-- 模板更新时间(秒)，即隔多少秒重新加载一次模板文件，默认5，0-每次都重新加载(上线前设置) -->
+				<prop key="locale">zh_CN</prop>							<!-- 本地化 -->
+				<prop key="default_encoding">UTF-8</prop>				<!-- 编码 -->
+				<prop key="url_escaping_charset">UTF-8</prop>			<!-- URL编码 -->
+				<prop key="date_format">yyyy-MM-dd</prop>				<!-- 日期格式 -->
+				<prop key="time_format">HH:mm:Ss</prop>					<!-- 时间格式 -->
+				<prop key="datetime_format">yyyy-MM-dd HH:mm:ss</prop>	<!-- 日期时间格式 -->
+				<prop key="number_format">#.#####</prop>				<!-- 数字格式 -->
+				<prop key="boolean_format">true,false</prop>			<!-- 布尔值格式 -->
+				<prop key="template_exception_handler">ignore</prop>	<!-- ignore：忽略异常，显示未填充任何值的页面模版，不显示黄色页面 -->
+				<prop key="object_wrapper">freemarker.ext.beans.BeansWrapper</prop>
+			</props>
+		</property>
+		<property name="freemarkerVariables">							<!-- 注册自定义方法和指令 -->
+			<map>
+				<entry key="base" value="#{servletContext.contextPath}" />
+				<entry key="random" value-ref="randomMethod" />
+				<entry key="substring" value-ref="substringMethod" />
+				<entry key="checkbox" value-ref="checkboxDirective" />
+				<entry key="pagination" value-ref="paginationDirective" />
+				<entry key="test" value-ref="testDirective" />
+			</map>
+		</property>
+	</bean>
+	
+	<!-- freemarker视图解析 -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+		<property name="suffix" value=".ftl"/>
+		<property name="contentType" value="text/html;charset=UTF-8"/>
+		<property name="exposeRequestAttributes" value="true" />	<!-- 请求属性被复制到模板的属性集中，可使用FreeMarker的表达式语言来访问并显示 -->
+		<property name="exposeSessionAttributes" value="true" />	<!-- 会话属性被复制到模板的属性集中，可使用FreeMarker的表达式语言来访问并显示 -->
+	</bean>
+	
+</beans>

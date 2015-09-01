@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+
+	<!-- 项目信息 -->
+	<description>dubbo服务提供者（服务实现）</description>
+
+
+	<!-- 父项目 -->
+	<parent>
+		<groupId>fuc</groupId>
+		<artifactId>fuc-parent</artifactId>
+		<version>1.0</version>
+	</parent>
+	
+	
+	<!-- 坐标 -->
+	<artifactId>test-dubbo-provider</artifactId>
+	<packaging>jar</packaging>
+
+
+	<!-- 依赖 -->
+	<dependencies>
+		<!-- 接口 -->
+		<dependency>
+			<groupId>fuc</groupId>
+			<artifactId>test-dubbo-api</artifactId>
+			<version>1.0</version>
+		</dependency>
+		
+		<!-- dubbo+zookeeper -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>dubbo</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.zookeeper</groupId>
+			<artifactId>zookeeper</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.101tec</groupId>
+			<artifactId>zkclient</artifactId>
+		</dependency>
+	
+		<!-- Spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+	</dependencies>
+</project>
